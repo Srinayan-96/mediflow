@@ -1,6 +1,7 @@
 package com.example.medicore.controller;
 
 
+import com.example.medicore.api.ApiResponse;
 import com.example.medicore.dto.DoctorRequestDTO;
 import com.example.medicore.dto.DoctorResponseDTO;
 import com.example.medicore.entity.Doctor;
@@ -19,30 +20,57 @@ public class DoctorController {
     private final DoctorService doctorService;
 
     @PostMapping
-    public DoctorResponseDTO create(
+    public ApiResponse<DoctorResponseDTO> create(
             @Valid @RequestBody DoctorRequestDTO request) {
-        return doctorService.create(request);
+
+        return new ApiResponse<>(
+                true,
+                "Doctor created successfully",
+                doctorService.create(request)
+        );
     }
 
     @GetMapping
-    public List<DoctorResponseDTO> getAllDoctors() {
-        return doctorService.getAll();
+    public ApiResponse<List<DoctorResponseDTO>> getAllDoctors() {
+
+        return new ApiResponse<>(
+                true,
+                "Doctors fetched successfully",
+                doctorService.getAll()
+        );
     }
 
     @GetMapping("/{id}")
-    public DoctorResponseDTO getById(@PathVariable Long id) {
-        return doctorService.getById(id);
+    public ApiResponse<DoctorResponseDTO> getById(@PathVariable Long id) {
+
+        return new ApiResponse<>(
+                true,
+                "Doctor fetched successfully",
+                doctorService.getById(id)
+        );
     }
+
     @PutMapping("/{id}")
-    public DoctorResponseDTO update(
+    public ApiResponse<DoctorResponseDTO> update(
             @PathVariable Long id,
             @Valid @RequestBody DoctorRequestDTO request) {
 
-        return doctorService.update(id, request);
+        return new ApiResponse<>(
+                true,
+                "Doctor updated successfully",
+                doctorService.update(id, request)
+        );
     }
 
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable Long id) {
+    public ApiResponse<String> delete(@PathVariable Long id) {
+
         doctorService.delete(id);
+
+        return new ApiResponse<>(
+                true,
+                "Doctor deactivated successfully",
+                null
+        );
     }
 }

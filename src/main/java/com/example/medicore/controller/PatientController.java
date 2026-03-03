@@ -1,5 +1,6 @@
 package com.example.medicore.controller;
 
+import com.example.medicore.api.ApiResponse;
 import com.example.medicore.dto.PatientRequestDTO;
 import com.example.medicore.dto.PatientResponseDTO;
 import com.example.medicore.entity.Patient;
@@ -19,24 +20,46 @@ public class PatientController {
     private final PatientService service;
 
     @PostMapping
-    public PatientResponseDTO create(
+    public ApiResponse<PatientResponseDTO> create(
             @Valid @RequestBody PatientRequestDTO request) {
-        return service.create(request);
+
+        return new ApiResponse<>(
+                true,
+                "Patient created successfully",
+                service.create(request)
+        );
     }
 
     @GetMapping
-    public List<PatientResponseDTO> getAll() {
-        return service.getAll();
+    public ApiResponse<List<PatientResponseDTO>> getAll() {
+
+        return new ApiResponse<>(
+                true,
+                "Patients fetched successfully",
+                service.getAll()
+        );
     }
 
     @GetMapping("/{id}")
-    public PatientResponseDTO getById(@PathVariable Long id) {
-        return service.getById(id);
+    public ApiResponse<PatientResponseDTO> getById(@PathVariable Long id) {
+
+        return new ApiResponse<>(
+                true,
+                "Patient fetched successfully",
+                service.getById(id)
+        );
     }
 
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable Long id) {
+    public ApiResponse<String> delete(@PathVariable Long id) {
+
         service.delete(id);
+
+        return new ApiResponse<>(
+                true,
+                "Patient deleted successfully",
+                null
+        );
     }
 
 }
