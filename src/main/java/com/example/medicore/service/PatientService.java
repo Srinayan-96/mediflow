@@ -1,12 +1,14 @@
 package com.example.medicore.service;
 
+import com.example.medicore.dto.PatientRequestDTO;
+import com.example.medicore.dto.PatientResponseDTO;
 import com.example.medicore.entity.Patient;
 import com.example.medicore.exception.ResourceNotFoundException;
 import com.example.medicore.repository.PatientRepository;
 
-import lombok.Getter;
+
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,20 +20,58 @@ public class PatientService {
 
     public final PatientRepository repository;
 
-    public Patient create(Patient patient){
-        return repository.save(patient);
+    // CREATE
+    public PatientResponseDTO create(PatientRequestDTO request) {
+
+        Patient patient = new Patient();
+        patient.setName(request.getName());
+        patient.setAge(request.getAge());
+        patient.setGender(request.getGender());
+        patient.setPhone(request.getPhone());
+        patient.setAddress(request.getAddress());
+
+        Patient saved = repository.save(patient);
+
+        return mapToResponse(saved);
     }
 
-    public List<Patient> getAll(){
-        return repository.findAll();
+    // GET ALL
+    public List<PatientResponseDTO> getAll() {
+        return repository.findAll()
+                .stream()
+                .map(this::mapToResponse)
+                .toList();
     }
 
-    public Patient getById(Long id){
-        return repository.findById(id).orElseThrow(()-> new ResourceNotFoundException("Patient not Found!"));
+    // GET BY ID
+    public PatientResponseDTO getById(Long id) {
+        Patient patient = repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Patient not Found!"));
+
+        return mapToResponse(patient);
     }
 
-    public void delete(Long id){
+    // DELETE
+    public void delete(Long id) {
+        if (!repository.existsById(id)) {
+            throw new ResourceNotFoundException("Patient not Found!");
+        }
         repository.deleteById(id);
+    }
+
+    // 🔥 ENTITY → RESPONSE DTO
+    private PatientResponseDTO mapToResponse(Patient patient) {
+
+        PatientResponseDTO response = new PatientResponseDTO();
+
+        response.setId(patient.getId());
+        response.setName(patient.getName());
+        response.setAge(patient.getAge());
+        response.setGender(patient.getGender());
+        response.setPhone(patient.getPhone());
+        response.setAddress(patient.getAddress());
+
+        return response;
     }
 
 }

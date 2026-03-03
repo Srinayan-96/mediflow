@@ -1,6 +1,8 @@
 package com.example.medicore.service;
 
 
+import com.example.medicore.dto.DoctorRequestDTO;
+import com.example.medicore.dto.DoctorResponseDTO;
 import com.example.medicore.entity.Doctor;
 import com.example.medicore.exception.ResourceNotFoundException;
 import com.example.medicore.repository.DoctorRepository;
@@ -15,19 +17,74 @@ public class DoctorService {
 
     private final DoctorRepository repository;
 
-    public Doctor create(Doctor doctor){
-        return repository.save(doctor);
+
+    // ✅ CREATE
+    public DoctorResponseDTO create(DoctorRequestDTO request) {
+
+        Doctor doctor = new Doctor();
+        doctor.setName(request.getName());
+        doctor.setSpecialization(request.getSpecialization());
+        doctor.setDepartment(request.getDepartment());
+        doctor.setActive(request.isActive());
+
+        Doctor saved = repository.save(doctor);
+
+        return mapToResponse(saved);
     }
 
-    public List<Doctor> getAll(){
-        return repository.findAll();
+    // ✅ GET ALL
+    public List<DoctorResponseDTO> getAll() {
+        return repository.findAll()
+                .stream()
+                .map(this::mapToResponse)
+                .toList();
     }
 
-    public Doctor getById(Long id){
-        return repository.findById(id).orElseThrow(()-> new ResourceNotFoundException("Docter not found!!"));
+    // ✅ GET BY ID
+    public DoctorResponseDTO getById(Long id) {
+        Doctor doctor = repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Doctor not found"));
+
+        return mapToResponse(doctor);
     }
 
-    public void delete(Long id){
-        repository.deleteById(id);
+    // ✅ UPDATE
+    public DoctorResponseDTO update(Long id, DoctorRequestDTO request) {
+
+        Doctor doctor = repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Doctor not found"));
+
+        doctor.setName(request.getName());
+        doctor.setSpecialization(request.getSpecialization());
+        doctor.setDepartment(request.getDepartment());
+        doctor.setActive(request.isActive());
+
+        Doctor updated = repository.save(doctor);
+
+        return mapToResponse(updated);
+    }
+
+    // ✅ SOFT DELETE (Deactivate)
+    public void delete(Long id) {
+
+        Doctor doctor = repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Doctor not found"));
+
+        doctor.setActive(false);   // 🔥 soft delete
+        repository.save(doctor);
+    }
+
+    // 🔁 ENTITY → RESPONSE DTO
+    private DoctorResponseDTO mapToResponse(Doctor doctor) {
+
+        DoctorResponseDTO response = new DoctorResponseDTO();
+
+        response.setId(doctor.getId());
+        response.setName(doctor.getName());
+        response.setSpecialization(doctor.getSpecialization());
+        response.setDepartment(doctor.getDepartment());
+        response.setActive(doctor.isActive());
+
+        return response;
     }
 }
