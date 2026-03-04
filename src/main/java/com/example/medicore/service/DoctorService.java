@@ -8,8 +8,10 @@ import com.example.medicore.exception.ResourceNotFoundException;
 import com.example.medicore.repository.DoctorRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
-import java.util.List;
+
 
 @Service
 @RequiredArgsConstructor
@@ -33,11 +35,11 @@ public class DoctorService {
     }
 
     // ✅ GET ALL
-    public List<DoctorResponseDTO> getAll() {
-        return repository.findAll()
-                .stream()
-                .map(this::mapToResponse)
-                .toList();
+    public Page<DoctorResponseDTO> getAll(Pageable pageable){
+
+        Page<Doctor> doctors = repository.findAll(pageable);
+
+        return doctors.map(this::mapToResponse);
     }
 
     // ✅ GET BY ID

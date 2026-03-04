@@ -9,9 +9,10 @@ import com.example.medicore.repository.PatientRepository;
 
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -36,11 +37,11 @@ public class PatientService {
     }
 
     // GET ALL
-    public List<PatientResponseDTO> getAll() {
-        return repository.findAll()
-                .stream()
-                .map(this::mapToResponse)
-                .toList();
+    public Page<PatientResponseDTO> getAll(Pageable pageable) {
+
+        Page<Patient> patients = repository.findAll(pageable);
+
+        return patients.map(this::mapToResponse);
     }
 
     // GET BY ID

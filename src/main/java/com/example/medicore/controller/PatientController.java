@@ -3,11 +3,12 @@ package com.example.medicore.controller;
 import com.example.medicore.api.ApiResponse;
 import com.example.medicore.dto.PatientRequestDTO;
 import com.example.medicore.dto.PatientResponseDTO;
-import com.example.medicore.entity.Patient;
 import com.example.medicore.service.PatientService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -31,12 +32,12 @@ public class PatientController {
     }
 
     @GetMapping
-    public ApiResponse<List<PatientResponseDTO>> getAll() {
+    public ApiResponse<Page<PatientResponseDTO>> getAll(Pageable pageable) {
 
         return new ApiResponse<>(
                 true,
                 "Patients fetched successfully",
-                service.getAll()
+                service.getAll(pageable)
         );
     }
 

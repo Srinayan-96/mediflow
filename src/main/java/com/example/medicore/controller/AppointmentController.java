@@ -8,8 +8,8 @@ import com.example.medicore.service.AppointmentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 
 @RestController
@@ -30,12 +30,12 @@ public class AppointmentController {
     }
 
     @GetMapping
-    public ApiResponse<List<AppointmentResponseDTO>> getAll() {
+    public ApiResponse<Page<AppointmentResponseDTO>> getAll(Pageable pageable){
 
         return new ApiResponse<>(
                 true,
                 "Appointments fetched successfully",
-                service.getAll()
+                service.getAll(pageable)
         );
     }
 

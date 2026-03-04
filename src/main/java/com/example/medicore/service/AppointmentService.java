@@ -12,8 +12,8 @@ import com.example.medicore.repository.DoctorRepository;
 import com.example.medicore.repository.PatientRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 @Service
 @RequiredArgsConstructor
@@ -44,11 +44,11 @@ public class AppointmentService {
     }
 
     // ✅ GET ALL
-    public List<AppointmentResponseDTO> getAll() {
-        return appointmentRepo.findAll()
-                .stream()
-                .map(this::mapToResponse)
-                .toList();
+    public Page<AppointmentResponseDTO> getAll(Pageable pageable){
+
+        Page<Appointment> appointments = appointmentRepo.findAll(pageable);
+
+        return appointments.map(this::mapToResponse);
     }
 
     // ✅ GET BY ID
