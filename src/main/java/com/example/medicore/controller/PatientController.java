@@ -6,6 +6,7 @@ import com.example.medicore.dto.PatientResponseDTO;
 import com.example.medicore.service.PatientService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -31,6 +32,7 @@ public class PatientController {
         );
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
     public ApiResponse<Page<PatientResponseDTO>> getAll(Pageable pageable) {
 

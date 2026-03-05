@@ -7,6 +7,7 @@ import com.example.medicore.dto.AppointmentResponseDTO;
 import com.example.medicore.service.AppointmentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -28,7 +29,7 @@ public class AppointmentController {
                 service.create(request)
         );
     }
-
+    @PreAuthorize("hasAnyRole('ADMIN','DOCTOR')")
     @GetMapping
     public ApiResponse<Page<AppointmentResponseDTO>> getAll(Pageable pageable){
 

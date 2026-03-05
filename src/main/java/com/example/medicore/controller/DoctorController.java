@@ -7,6 +7,7 @@ import com.example.medicore.dto.DoctorResponseDTO;
 import com.example.medicore.service.DoctorService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,6 +20,7 @@ public class DoctorController {
 
     private final DoctorService doctorService;
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ApiResponse<DoctorResponseDTO> create(
             @Valid @RequestBody DoctorRequestDTO request) {
@@ -29,7 +31,7 @@ public class DoctorController {
                 doctorService.create(request)
         );
     }
-
+    @PreAuthorize("hasAnyRole('ADMIN','DOCTOR')")
     @GetMapping
     public ApiResponse<Page<DoctorResponseDTO>> getAllDoctors(Pageable pageable){
 
@@ -39,7 +41,7 @@ public class DoctorController {
                 doctorService.getAll(pageable)
         );
     }
-
+    @PreAuthorize("hasAnyRole('ADMIN','DOCTOR')")
     @GetMapping("/{id}")
     public ApiResponse<DoctorResponseDTO> getById(@PathVariable Long id) {
 
@@ -62,6 +64,7 @@ public class DoctorController {
         );
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ApiResponse<String> delete(@PathVariable Long id) {
 

@@ -2,6 +2,8 @@ package com.example.medicore.controller;
 
 import com.example.medicore.api.ApiResponse;
 import com.example.medicore.dto.LoginRequestDTO;
+import com.example.medicore.entity.User;
+import com.example.medicore.repository.UserRepository;
 import com.example.medicore.security.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class AuthController {
 
+    private final UserRepository userRepository;
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
 
@@ -29,7 +32,14 @@ public class AuthController {
                 )
         );
 
-        String token = jwtService.generateToken(request.getUsername());
+        User user = userRepository
+                .findByUsername(request.getUsername())
+                .orElseThrow();
+
+        String token = jwtService.generateToken(
+                user.getUsername(),
+                user.getRole()
+        );
 
         return new ApiResponse<>(
                 true,

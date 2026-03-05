@@ -22,7 +22,7 @@ public class    GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGeneralException(Exception ex) {
 
-        ErrorResponse error = new ErrorResponse("Something went wrong");
+        ErrorResponse error = new ErrorResponse(ex.getMessage());
 
         return ResponseEntity
                 .status(500)
