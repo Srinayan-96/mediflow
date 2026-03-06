@@ -15,6 +15,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.time.LocalDate;
+import java.util.Comparator;
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class AppointmentService {
@@ -23,7 +27,7 @@ public class AppointmentService {
     private final DoctorRepository doctorRepo;
     private final PatientRepository patientRepo;
 
-    // ✅ CREATE
+    // CREATE
     public AppointmentResponseDTO create(AppointmentRequestDTO request) {
 
         Patient patient = patientRepo.findById(request.getPatientId())
@@ -43,7 +47,7 @@ public class AppointmentService {
         return mapToResponse(saved);
     }
 
-    // ✅ GET ALL
+    // GET ALL
     public Page<AppointmentResponseDTO> getAll(Pageable pageable){
 
         Page<Appointment> appointments = appointmentRepo.findAll(pageable);
@@ -51,7 +55,7 @@ public class AppointmentService {
         return appointments.map(this::mapToResponse);
     }
 
-    // ✅ GET BY ID
+    // GET BY ID
     public AppointmentResponseDTO getById(Long id) {
         Appointment appointment = appointmentRepo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Appointment not found"));
@@ -59,7 +63,7 @@ public class AppointmentService {
         return mapToResponse(appointment);
     }
 
-    // ✅ UPDATE
+    // UPDATE
     public AppointmentResponseDTO update(Long id, AppointmentRequestDTO request) {
 
         Appointment appointment = appointmentRepo.findById(id)
@@ -81,7 +85,7 @@ public class AppointmentService {
         return mapToResponse(updated);
     }
 
-    // ✅ DELETE
+    // DELETE
     public void delete(Long id) {
         if (!appointmentRepo.existsById(id)) {
             throw new ResourceNotFoundException("Appointment not found");
@@ -89,7 +93,33 @@ public class AppointmentService {
         appointmentRepo.deleteById(id);
     }
 
-    // 🔁 ENTITY → RESPONSE DTO
+    // Auto-Scheduler Method
+    public Appointment autoSchedule(Long patientId, String specialization, LocalDate date) {
+
+        Patient patient = patientRepo.findById(patientId)
+                .orElseThrow(() -> new ResourceNotFoundException("Patient not found"));
+
+        List<Doctor> doctors = doctorRepo.findBySpecialization(specialization);
+
+        if (doctors.isEmpty()) {
+            throw new RuntimeException("No doctors available for this specialization");
+        }
+
+        Doctor bestDoctor = doctors.stream()
+                .min(Comparator.comparingLong(doc ->
+                        appointmentRepo.countByDoctorAndAppointmentDate(doc, date)))
+                .orElseThrow();
+
+        Appointment appointment = new Appointment();
+
+        appointment.setPatient(patient);
+        appointment.setDoctor(bestDoctor);
+        appointment.setAppointmentDate(date);
+
+        return appointmentRepo.save(appointment);
+    }
+
+    //ENTITY → RESPONSE DTO
     private AppointmentResponseDTO mapToResponse(Appointment appointment) {
 
         AppointmentResponseDTO response = new AppointmentResponseDTO();
@@ -106,4 +136,6 @@ public class AppointmentService {
 
         return response;
     }
+
+
 }
