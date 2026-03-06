@@ -4,6 +4,8 @@ package com.example.medicore.controller;
 import com.example.medicore.api.ApiResponse;
 import com.example.medicore.dto.AppointmentRequestDTO;
 import com.example.medicore.dto.AppointmentResponseDTO;
+import com.example.medicore.dto.AutoAppointmentRequestDTO;
+import com.example.medicore.entity.Appointment;
 import com.example.medicore.service.AppointmentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +29,22 @@ public class AppointmentController {
                 true,
                 "Appointment created successfully",
                 service.create(request)
+        );
+    }
+    @PostMapping("/auto")
+    public ApiResponse<Appointment> autoSchedule(
+            @RequestBody AutoAppointmentRequestDTO request) {
+
+        Appointment appointment =   service.autoSchedule(
+                request.getPatientId(),
+                request.getSpecialization(),
+                request.getAppointmentDate()
+        );
+
+        return new ApiResponse<>(
+                true,
+                "Appointment auto scheduled successfully",
+                appointment
         );
     }
     @PreAuthorize("hasAnyRole('ADMIN','DOCTOR')")
