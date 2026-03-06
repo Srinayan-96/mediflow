@@ -32,7 +32,7 @@ public class PatientController {
         );
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("isAuthenticated()")
     @GetMapping
     public ApiResponse<Page<PatientResponseDTO>> getAll(Pageable pageable) {
 
