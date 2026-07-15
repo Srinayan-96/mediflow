@@ -1,4 +1,4 @@
-# MedicoRe — Hospital Management Backend
+# MediCore — Hospital Management Backend
 
 A production-ready backend system for managing hospital operations — patients, doctors, and appointments — built with Spring Boot and secured with JWT authentication.
 
